@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 	PIMAGE_DOS_HEADER pImgDosHeaders = (PIMAGE_DOS_HEADER)hModule;
 	PIMAGE_NT_HEADERS pImgNTHeaders = (PIMAGE_NT_HEADERS)((LPBYTE)pImgDosHeaders + pImgDosHeaders->e_lfanew);
 	PIMAGE_IMPORT_DESCRIPTOR pImgImportDesc = (PIMAGE_IMPORT_DESCRIPTOR)((LPBYTE)pImgDosHeaders + pImgNTHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress);
-	DWORD dwSize = (DWORD)((LPBYTE)pImgDosHeaders + pImgNTHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].Size);
+	//DWORD dwSize = (DWORD)((LPBYTE)pImgDosHeaders + pImgNTHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].Size);
 
 	PROCESS_BASIC_INFORMATION basicInfo;
 	NtQueryInformationProcess(processInfo.hProcess, ProcessBasicInformation, &basicInfo, sizeof(basicInfo), NULL);
@@ -49,8 +49,9 @@ int main(int argc, char** argv)
 		std::cerr << "[!] failed to read process memory" << std::endl;
 		return 1;
 	}
+	PIMAGE_IMPORT_DESCRIPTOR iid;
 
-	for (IMAGE_IMPORT_DESCRIPTOR* iid = pImgImportDesc; iid->Name != NULL; iid++) 
+	for (iid = pImgImportDesc; iid->Name != NULL; iid++)
 	{
 		if (std::string((char*)((ULONG_PTR)hModule + iid->Name)) == "KERNEL32.dll")
 		{
