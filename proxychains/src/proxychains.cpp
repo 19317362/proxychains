@@ -1,18 +1,24 @@
  #include <Windows.h>
 #include <iostream>
 #include <winternl.h>
-int main(int argc, char** argv)
+int main(int argc, TCHAR* argv[])
 {
 	PROCESS_INFORMATION processInfo;
 	STARTUPINFO startupInfo = { 0 };
 	startupInfo.cb = sizeof(startupInfo);
-	if (!CreateProcess(TEXT("C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"), NULL, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &startupInfo, &processInfo))
+	if(argc <2)
+	{
+		std::cerr << "Usage: "<< argv[0] << " <cmd>" << std::endl;
+		return -1;
+	}
+	//if (!CreateProcess(TEXT("C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"), NULL, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &startupInfo, &processInfo))
+	if (!CreateProcess(argv[1], NULL, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &startupInfo, &processInfo))
 	{
 		std::cerr << "[!] cannot create process" << std::endl;
 		return 1;
 	}
 
-	auto hFile = CreateFile(TEXT("C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+	auto hFile = CreateFile(argv[1], GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		std::cerr << "[!] cannot open file " << GetLastError() <<  std::endl;
